@@ -15,7 +15,8 @@ function App() {
   const [ championData, setChampionData ] = useState([])
   const [ topMasteryData, setTopMasteryData ] = useState([])
   const [ awaitingTopChamps, setAwaitingTopChamps ] = useState(true)
-  const apiKey= "RGAPI-1131a04c-97fd-46e7-bc18-0288c8dd3fc1"
+  const [ zeroMasterChamps, setZeroMasterChamps ] = useState(0)
+  const apiKey= "RGAPI-349c83b4-037f-4d9b-b726-ef2249a4ebff"
 
   class Champion {
     constructor(id, name) {
@@ -55,9 +56,9 @@ function App() {
     const res = await fetch(`https://oc1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerAccName}?api_key=${apiKey}`)
     const data = await res.json()
     setAccount(data)
-    console.log(data)
+    // console.log(data)
     setawaitingAccount(false)
-    await handleTopChamp()
+    // await handleTopChamp()
   }
 
   // const handleTopChamp = (event) => {
@@ -67,16 +68,41 @@ function App() {
 
   useEffect(() => {
   async function getTopChamp() {
-    const res = await fetch(`https://oc1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${account.id}/top?count=10&api_key=${apiKey}`)
+    const res = await fetch(`https://oc1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${account.id}/top?count=164&api_key=${apiKey}`)
     const data = await res.json()
+    // const sorted = data.sort((a, b) => a.championId - b.championId)
     setTopMasteryData(data)
-    console.log(data)
+    // console.log(sorted)
     setAwaitingTopChamps(false)
   }
   getTopChamp()
 
 }, [account])
 
+const handleZeroMasterySubmit = (event) => {
+  event.preventDefault()
+  getZeroMasteryChamps()
+}
+
+async function getZeroMasteryChamps() {
+  for( let i = 0; i < championData.length; i++ ) {
+    // console.log(championData.length)
+    let x = championData[i]
+    let y = topMasteryData
+    for ( let j = 0; j < topMasteryData.length; j++ ) {
+      // console.log(topMasteryData.length)
+      // console.log(`this is the champ data ${championData[i].id}`)
+      // console.log(`this is the mastery data ${topMasteryData[j].championId}`)
+      if (topMasteryData[j].championId == championData[i].id) {
+          console.log(`matched`)
+          break
+      }
+      // else {
+      //     console.log(championData[i].name)
+      //     break
+      // }
+
+} console.log(championData[i].name)}}
   // const handleTftData = (event) => {
   //   event.preventDefault()
   //   getTftData()
@@ -215,6 +241,9 @@ function App() {
                           <ol>
                             {topMasteryData.map((topChamp) => <li>{championData.find((champ) => champ.id == topChamp.championId).name} - {topChamp.championPoints} Mastery Points</li>)}
                           </ol>
+                          <form onSubmit={handleZeroMasterySubmit}>
+                            <button type="submit" >0 mastery</button>
+                          </form>
                             {/* <p>{championData.find((champ) => (champ.id == topMasteryData[0].championId)).name} - {topMasteryData[0].championPoints} Mastery Points</p> */}
                           </>
                         }
